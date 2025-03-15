@@ -5,7 +5,6 @@
 package controller;
 
 import dao.LeaveRequestDAO;
-import jakarta.servlet.ServletException;
 import model.LeaveRequest;
 import model.User;
 import jakarta.servlet.ServletException;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PersonalAgendaServlet extends HttpServlet {
-    private final LeaveRequestDAO requestDAO = new LeaveRequestDAO();
+    private LeaveRequestDAO requestDAO = new LeaveRequestDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -35,18 +34,37 @@ public class PersonalAgendaServlet extends HttpServlet {
             List<LeaveRequest> requests = requestDAO.getPersonalRequests(userId);
             req.setAttribute("requests", requests);
             req.setAttribute("startDate", user.getCreatedDate());
+            req.setAttribute("currentDate", new Date(System.currentTimeMillis())); // Today: 2025-03-15
 
-            // Compute 10 days from startDate as java.sql.Date
-            List<Date> dateRange = new ArrayList<>();
-            long startMillis = user.getCreatedDate().getTime();
-            for (int i = 0; i < 10; i++) {
-                dateRange.add(new Date(startMillis + (i * 24 * 60 * 60 * 1000)));
+            // Compute monthly ranges for 2025 with leap year check
+            int year = 2025; // Fixed for now, can be made dynamic
+            List<List<Date>> monthlyRanges = new ArrayList<>();
+            int[] daysInMonth = {31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            long startMillis = Date.valueOf(year + "-01-01").getTime();
+            for (int month = 0; month < 12; month++) {
+                List<Date> monthDays = new ArrayList<>();
+                for (int day = 0; day < daysInMonth[month]; day++) {
+                    monthDays.add(new Date(startMillis + (long) (day + getDaysBeforeMonth(month, daysInMonth)) * 24 * 60 * 60 * 1000));
+                }
+                monthlyRanges.add(monthDays);
             }
-            req.setAttribute("dateRange", dateRange);
+            req.setAttribute("monthlyRanges", monthlyRanges);
 
             req.getRequestDispatcher("/personal_agenda.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    private boolean isLeapYear(int year) {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    }
+
+    private int getDaysBeforeMonth(int month, int[] daysInMonth) {
+        int days = 0;
+        for (int i = 0; i < month; i++) {
+            days += daysInMonth[i];
+        }
+        return days;
     }
 }

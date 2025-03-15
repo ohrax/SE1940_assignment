@@ -10,23 +10,57 @@
     <head><title>Personal Agenda</title></head>
     <body>
         <h1>Personal Agenda</h1>
-        <table border="1">
-            <tr>
-                <th>Personnel</th>
-                    <c:forEach var="date" items="${dateRange}">
-                    <th>${date}</th>
-                    </c:forEach>
-            </tr>
-            <c:forEach var="request" items="${requests}">
+        <h3>${sessionScope.user.fullName}</h3>
+        <c:forEach var="monthDays" items="${monthlyRanges}" varStatus="monthLoop">
+            <h2>
+                <c:choose>
+                    <c:when test="${monthLoop.index == 0}">January</c:when>
+                    <c:when test="${monthLoop.index == 1}">February</c:when>
+                    <c:when test="${monthLoop.index == 2}">March</c:when>
+                    <c:when test="${monthLoop.index == 3}">April</c:when>
+                    <c:when test="${monthLoop.index == 4}">May</c:when>
+                    <c:when test="${monthLoop.index == 5}">June</c:when>
+                    <c:when test="${monthLoop.index == 6}">July</c:when>
+                    <c:when test="${monthLoop.index == 7}">August</c:when>
+                    <c:when test="${monthLoop.index == 8}">September</c:when>
+                    <c:when test="${monthLoop.index == 9}">October</c:when>
+                    <c:when test="${monthLoop.index == 10}">November</c:when>
+                    <c:when test="${monthLoop.index == 11}">December</c:when>
+                </c:choose>
+            </h2>
+            <table border="1">
                 <tr>
-                    <td>${request.createdBy}</td>
-                    <c:forEach var="date" items="${dateRange}">
-                        <td style="background-color: ${request.status == 'Approved' && request.fromDate <= date && request.toDate >= date ? 'red' : 'green'}"></td>
+                    <c:forEach var="day" items="${monthDays}">
+                        <th style="min-width: 40px; height: 40px;">${day.toString().substring(5)}</th> <!-- Widen headers -->
+                        </c:forEach>
+                </tr>
+                <tr>
+                    <c:forEach var="day" items="${monthDays}">
+                        <td style="min-width: 40px; height: 40px; background-color:
+                            <c:choose>
+                                <c:when test="${day.before(startDate)}">none</c:when>
+                                <c:when test="${not empty requests}">
+                                    <c:set var="isAbsent" value="false"/>
+                                    <c:forEach var="request" items="${requests}">
+                                        <c:if test="${request.status == 'Approved' && request.fromDate <= day && request.toDate >= day}">
+                                            <c:set var="isAbsent" value="true"/>
+                                        </c:if>
+                                    </c:forEach>
+                                    <c:choose>
+                                        <c:when test="${isAbsent}">red</c:when>
+                                        <c:when test="${day <= currentDate}">green</c:when>
+                                        <c:otherwise>none</c:otherwise>
+                                    </c:choose>
+                                </c:when>
+                                <c:when test="${day <= currentDate}">green</c:when>
+                                <c:otherwise>none</c:otherwise>
+                            </c:choose>">
+                        </td>
                     </c:forEach>
                 </tr>
-            </c:forEach>
-        </table>
-        <br>
-        <a href="/LeaveManagement/home">Back to Home</a>
+            </table>
+            <br>
+        </c:forEach>
+        <a href="home">Back to Home</a>
     </body>
 </html>

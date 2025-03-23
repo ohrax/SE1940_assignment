@@ -18,6 +18,7 @@ public class LeaveRequest {
     private Integer processedBy;
     private String createdBy;
     private String processedByUsername;
+    private String requesterRole;
 
     public LeaveRequest(int requestId, int userId, String title, Date fromDate, Date toDate, String reason, String status, Integer processedBy) {
         this.requestId = requestId;
@@ -77,4 +78,14 @@ public class LeaveRequest {
     public void setProcessedByUsername(String processedByUsername) {
         this.processedByUsername = processedByUsername;
     }
+
+    public String getRequesterRole() {
+        return requesterRole;
+    }
+
+    public void setRequesterRole(String requesterRole) {
+        this.requesterRole = requesterRole;
+    }
+    
+    
 }

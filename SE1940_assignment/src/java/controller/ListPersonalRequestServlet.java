@@ -31,9 +31,14 @@ public class ListPersonalRequestServlet extends HttpServlet {
         String pathInfo = req.getPathInfo(); // e.g., "/1" or null
         int userId = (pathInfo != null && pathInfo.length() > 1) ? Integer.parseInt(pathInfo.substring(1)) : user.getUserId();
         try {
+            // Only allow users to view their own requests
+            if (userId != user.getUserId()) {
+                resp.sendRedirect("/LeaveManagement/request/list/personal");
+                return;
+            }
             List<LeaveRequest> requests = requestDAO.getPersonalRequests(userId);
             req.setAttribute("requests", requests);
-            req.getRequestDispatcher("/request_list.jsp").forward(req, resp);
+            req.getRequestDispatcher("/personal_list.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
         }

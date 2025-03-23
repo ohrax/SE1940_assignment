@@ -31,16 +31,37 @@ public class ListEmployeeRequestServlet extends HttpServlet {
         try {
             String pathInfo = req.getPathInfo(); // e.g., "/1" or null
             List<LeaveRequest> requests;
-            if ("leader".equals(user.getRoleName()) && pathInfo != null && pathInfo.length() > 1) {
-                int userId = Integer.parseInt(pathInfo.substring(1));
-                requests = requestDAO.getEmployeeRequests(userId, user.getRoleName());
+            if (pathInfo != null && pathInfo.length() > 1) {
+                int targetUserId = Integer.parseInt(pathInfo.substring(1));
+                // Fetch requests for the specific user, ensuring the logged-in user has permission
+                requests = requestDAO.getEmployeeRequests(user.getUserId(), user.getRoleName(), targetUserId);
             } else {
-                requests = requestDAO.getEmployeeRequests(user.getUserId(), user.getRoleName());
+                // Fetch all requests the logged-in user can see
+                requests = requestDAO.getEmployeeRequests(user.getUserId(), user.getRoleName(), null);
             }
             req.setAttribute("requests", requests);
-            req.getRequestDispatcher("/request_list.jsp").forward(req, resp);
+            req.getRequestDispatcher("/employee_list.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
+        }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null || (!user.getRoleName().equals("leader") && !user.getRoleName().equals("department_manager") && !user.getRoleName().equals("admin"))) {
+            resp.sendRedirect("/LeaveManagement/login");
+            return;
+        }
+
+        String userIdStr = req.getParameter("userId");
+        if (userIdStr != null && !userIdStr.isEmpty()) {
+            int userId = Integer.parseInt(userIdStr);
+            session.setAttribute("userID", userId);
+            resp.sendRedirect("/LeaveManagement/request/list/employee/" + userId);
+        } else {
+            resp.sendRedirect("/LeaveManagement/request/list/employee");
         }
     }
 }

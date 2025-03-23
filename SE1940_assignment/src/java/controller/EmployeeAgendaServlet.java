@@ -34,11 +34,13 @@ public class EmployeeAgendaServlet extends HttpServlet {
                 int userId = Integer.parseInt(pathInfo.substring(1));
                 List<LeaveRequest> requests = requestDAO.getPersonalRequests(userId);
                 req.setAttribute("requests", requests);
-                req.setAttribute("startDate", user.getCreatedDate());
-                req.setAttribute("currentDate", new Date(System.currentTimeMillis())); // Today: 2025-03-15
+
+                // Fetch the correct startDate for the userId
+                Date startDate = userId == user.getUserId() ? user.getCreatedDate() : requestDAO.getUserStartDate(userId);
+                req.setAttribute("startDate", startDate);
 
                 // Compute monthly ranges for 2025 with leap year check
-                int year = 2025; // Fixed for now, can be made dynamic
+                int year = 2025;
                 List<List<Date>> monthlyRanges = new ArrayList<>();
                 int[] daysInMonth = {31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
                 long startMillis = Date.valueOf(year + "-01-01").getTime();
@@ -68,6 +70,7 @@ public class EmployeeAgendaServlet extends HttpServlet {
         String userIdStr = req.getParameter("userId");
         if (userIdStr != null && !userIdStr.isEmpty()) {
             int userId = Integer.parseInt(userIdStr);
+            session.setAttribute("userID", userId);
             resp.sendRedirect("/LeaveManagement/agenda/employee/" + userId);
         } else {
             resp.sendRedirect("/LeaveManagement/agenda/employee");

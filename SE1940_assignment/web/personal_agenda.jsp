@@ -31,29 +31,24 @@
             <table border="1">
                 <tr>
                     <c:forEach var="day" items="${monthDays}">
-                        <th style="min-width: 40px; height: 40px;">${day.toString().substring(5)}</th> <!-- Widen headers -->
+                        <th style="min-width: 40px; height: 40px;">${day.toString().substring(5)}</th>
                         </c:forEach>
                 </tr>
                 <tr>
                     <c:forEach var="day" items="${monthDays}">
+                        <c:set var="isAbsent" value="false"/>
+                        <c:if test="${not day.before(startDate) && not empty requests}">
+                            <c:forEach var="request" items="${requests}">
+                                <c:if test="${request.status == 'Approved' && request.fromDate <= day && request.toDate >= day}">
+                                    <c:set var="isAbsent" value="true"/>
+                                </c:if>
+                            </c:forEach>
+                        </c:if>
                         <td style="min-width: 40px; height: 40px; background-color:
                             <c:choose>
                                 <c:when test="${day.before(startDate)}">none</c:when>
-                                <c:when test="${not empty requests}">
-                                    <c:set var="isAbsent" value="false"/>
-                                    <c:forEach var="request" items="${requests}">
-                                        <c:if test="${request.status == 'Approved' && request.fromDate <= day && request.toDate >= day}">
-                                            <c:set var="isAbsent" value="true"/>
-                                        </c:if>
-                                    </c:forEach>
-                                    <c:choose>
-                                        <c:when test="${isAbsent}">red</c:when>
-                                        <c:when test="${day <= currentDate}">green</c:when>
-                                        <c:otherwise>none</c:otherwise>
-                                    </c:choose>
-                                </c:when>
-                                <c:when test="${day <= currentDate}">green</c:when>
-                                <c:otherwise>none</c:otherwise>
+                                <c:when test="${isAbsent}">red</c:when>
+                                <c:otherwise>green</c:otherwise>
                             </c:choose>">
                         </td>
                     </c:forEach>
@@ -61,6 +56,6 @@
             </table>
             <br>
         </c:forEach>
-        <a href="home">Back to Home</a>
+        <a href="/LeaveManagement/home">Back to Home</a>
     </body>
 </html>

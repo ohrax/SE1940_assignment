@@ -8,13 +8,13 @@ public class User {
     private String username;
     private String password;
     private String fullName;
-    private int divisionId;
-    private int managerId;
+    private Integer divisionId; // Changed to Integer to allow null
+    private Integer managerId;
     private String roleName;
     private String divisionName;
     private Date createdDate; // for agenda
 
-    public User(int userId, String username, String password, String fullName, int divisionId, int managerId, String roleName, String divisionName, Date createdDate) {
+    public User(int userId, String username, String password, String fullName, Integer divisionId, Integer managerId, String roleName, String divisionName, Date createdDate) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -42,11 +42,11 @@ public class User {
         return fullName;
     }
 
-    public int getDivisionId() {
+    public Integer getDivisionId() {
         return divisionId;
     }
 
-    public int getManagerId() {
+    public Integer getManagerId() {
         return managerId;
     }
 
@@ -65,4 +65,38 @@ public class User {
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setDivisionId(Integer divisionId) {
+        this.divisionId = divisionId;
+    }
+
+    public void setManagerId(Integer managerId) {
+        this.managerId = managerId;
+    }
+
+    public void setDivisionName(String divisionName) {
+        this.divisionName = divisionName;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+    
+    
 }

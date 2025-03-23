@@ -10,7 +10,7 @@
     <head><title>Personal Agenda</title></head>
     <body>
         <h1>Personal Agenda</h1>
-        <h3>${sessionScope.user.fullName}</h3>
+        <h3>Logged in as: ${sessionScope.user.fullName} (${sessionScope.user.roleName})</h3>
         <c:forEach var="monthDays" items="${monthlyRanges}" varStatus="monthLoop">
             <h2>
                 <c:choose>

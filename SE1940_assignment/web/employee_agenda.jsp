@@ -10,12 +10,16 @@
     <head><title>Employee Agenda</title></head>
     <body>
         <h1>Employee Agenda</h1>
+        <h3>Logged in as: ${sessionScope.user.fullName} (${sessionScope.user.roleName})</h3>
         <c:if test="${sessionScope.user.roleName == 'leader' || sessionScope.user.roleName == 'department_manager' || sessionScope.user.roleName == 'admin'}">
             <h3>Select Employee Agenda:</h3>
-            <form action="/LeaveManagement/agenda/employee" method="post">
-                <label>User ID: <input type="number" name="userId" value="${userID}" required></label>
+            <form action="/LeaveManagement/agenda/employee" method="POST">
+                <label>User ID: <input type="number" name="userId" required></label>
                 <button type="submit">View</button>
             </form>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <p style="color: red;">${errorMessage}</p>
         </c:if>
         <c:if test="${not empty requests}">
             <h3>Agenda for: ${requests[0].createdBy}</h3>

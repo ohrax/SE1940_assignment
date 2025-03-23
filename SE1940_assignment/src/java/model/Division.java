@@ -9,6 +9,7 @@ package model;
  * @author admin
  */
 public class Division {
+
     private int divisionId;
     private String divisionName;
 
@@ -32,6 +33,5 @@ public class Division {
     public void setDivisionName(String divisionName) {
         this.divisionName = divisionName;
     }
-    
-    
+
 }

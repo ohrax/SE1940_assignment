@@ -9,7 +9,7 @@
     <head><title>Login</title></head>
     <body>
         <h1>Login</h1>
-        <form action="/LeaveManagement/login" method="post">
+        <form action="/LeaveManagement/login" method="POST">
             <label>Username: <input type="text" name="username"></label><br>
             <label>Password: <input type="password" name="password"></label><br>
             <button type="submit">Login</button>

@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoleDAO {
+
     public List<Role> getRolesByUserId(int userId) throws Exception {
         List<Role> roles = new ArrayList<>();
         String sql = "SELECT r.* FROM roles r JOIN user_roles ur ON r.role_id = ur.role_id WHERE ur.user_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

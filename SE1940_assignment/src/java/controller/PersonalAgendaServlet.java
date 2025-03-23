@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PersonalAgendaServlet extends HttpServlet {
+
     private LeaveRequestDAO requestDAO = new LeaveRequestDAO();
 
     @Override

@@ -55,9 +55,5 @@ INSERT INTO users (username, password, full_name, division_id, manager_id, creat
     ('leader1', '123', 'Tran Thi B', 1, 4, '2025-01-15'),
     ('mgr1', '123', 'Bui Van C', 1, 4, '2025-02-27'),
     ('admin1', '123', 'Nguyen Viet Boss', 1, NULL, '2025-03-01');
-INSERT INTO users (username, password, full_name, division_id, manager_id) VALUES
-	('emp2','123', 'Ngo Van D', 1, 2),
-	('emp3','123', 'Dao Quang E', 1, 7),
-	('leader2','123', 'Do Hong G', 1, 4);
 INSERT INTO user_roles (user_id, role_id) VALUES 
     (1, 1), (2, 2), (3, 3), (4, 4);

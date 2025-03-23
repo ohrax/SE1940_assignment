@@ -12,10 +12,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class DivisionDAO {
+
     public Division getDivisionById(int divisionId) throws Exception {
         String sql = "SELECT * FROM divisions WHERE division_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, divisionId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {

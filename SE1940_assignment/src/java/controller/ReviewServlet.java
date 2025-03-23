@@ -22,7 +22,7 @@ public class ReviewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = (User) req.getSession().getAttribute("user");
         if (user == null) {
-            resp.sendRedirect("/LeaveManagement/login");
+            resp.sendRedirect("login");
             return;
         }
 
@@ -46,6 +46,17 @@ public class ReviewServlet extends HttpServlet {
                 return;
             }
 
+            // Check if the user can review or re-review this request
+            boolean canReview = false;
+            boolean canReReview = false;
+
+            // Check if the request is already processed and the user is the one who processed it
+            if (request.getProcessedBy() != null && request.getProcessedBy() == user.getUserId()
+                    && (request.getStatus().equals("Approved") || request.getStatus().equals("Rejected"))) {
+                canReReview = true;
+            }
+
+            // Prevent users from reviewing their own requests
             if (request.getUserId() == user.getUserId()) {
                 resp.sendRedirect("/LeaveManagement/request/list/employee");
                 return;
@@ -53,36 +64,39 @@ public class ReviewServlet extends HttpServlet {
 
             String requesterRole = request.getRequesterRole();
             if (requesterRole == null) {
-                // Handle case where requester's role is not defined
                 resp.sendRedirect("/LeaveManagement/request/list/employee");
                 return;
             }
 
-            boolean canReview = false;
-            switch (role) {
-                case "leader":
-                    if (requesterRole.equals("employee")) {
-                        canReview = true;
-                    }
-                    break;
-                case "department_manager":
-                    if (requesterRole.equals("employee") || requesterRole.equals("leader")) {
-                        canReview = true;
-                    }
-                    break;
-                case "admin":
-                    if (requesterRole.equals("employee") || requesterRole.equals("leader") || requesterRole.equals("department_manager")) {
-                        canReview = true;
-                    }
-                    break;
+            // Check if the user can review the request (if it's still "Inprogress")
+            if (request.getStatus().equals("Inprogress")) {
+                switch (role) {
+                    case "leader":
+                        if (requesterRole.equals("employee")) {
+                            canReview = true;
+                        }
+                        break;
+                    case "department_manager":
+                        if (requesterRole.equals("employee") || requesterRole.equals("leader")) {
+                            canReview = true;
+                        }
+                        break;
+                    case "admin":
+                        if (requesterRole.equals("employee") || requesterRole.equals("leader") || requesterRole.equals("department_manager")) {
+                            canReview = true;
+                        }
+                        break;
+                }
             }
 
-            if (!canReview) {
+            // Allow access if the user can either review or re-review
+            if (!canReview && !canReReview) {
                 resp.sendRedirect("/LeaveManagement/request/list/employee");
                 return;
             }
 
             req.setAttribute("request", request);
+            req.setAttribute("canReReview", canReReview);
             req.getRequestDispatcher("/request_review.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
@@ -93,7 +107,7 @@ public class ReviewServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = (User) req.getSession().getAttribute("user");
         if (user == null) {
-            resp.sendRedirect("/LeaveManagement/login");
+            resp.sendRedirect("login");
             return;
         }
 
@@ -117,6 +131,7 @@ public class ReviewServlet extends HttpServlet {
                 return;
             }
 
+            // Prevent users from reviewing their own requests
             if (request.getUserId() == user.getUserId()) {
                 resp.sendRedirect("/LeaveManagement/request/list/employee");
                 return;
@@ -129,25 +144,36 @@ public class ReviewServlet extends HttpServlet {
             }
 
             boolean canReview = false;
-            switch (role) {
-                case "leader":
-                    if (requesterRole.equals("employee")) {
-                        canReview = true;
-                    }
-                    break;
-                case "department_manager":
-                    if (requesterRole.equals("employee") || requesterRole.equals("leader")) {
-                        canReview = true;
-                    }
-                    break;
-                case "admin":
-                    if (requesterRole.equals("employee") || requesterRole.equals("leader") || requesterRole.equals("department_manager")) {
-                        canReview = true;
-                    }
-                    break;
+            boolean canReReview = false;
+
+            // Check if the user can re-review (if they processed it)
+            if (request.getProcessedBy() != null && request.getProcessedBy() == user.getUserId()
+                    && (request.getStatus().equals("Approved") || request.getStatus().equals("Rejected"))) {
+                canReReview = true;
             }
 
-            if (!canReview) {
+            // Check if the user can review (if it's still "Inprogress")
+            if (request.getStatus().equals("Inprogress")) {
+                switch (role) {
+                    case "leader":
+                        if (requesterRole.equals("employee")) {
+                            canReview = true;
+                        }
+                        break;
+                    case "department_manager":
+                        if (requesterRole.equals("employee") || requesterRole.equals("leader")) {
+                            canReview = true;
+                        }
+                        break;
+                    case "admin":
+                        if (requesterRole.equals("employee") || requesterRole.equals("leader") || requesterRole.equals("department_manager")) {
+                            canReview = true;
+                        }
+                        break;
+                }
+            }
+
+            if (!canReview && !canReReview) {
                 resp.sendRedirect("/LeaveManagement/request/list/employee");
                 return;
             }

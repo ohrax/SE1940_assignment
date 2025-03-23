@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LeaveRequestDAO {
+
     public void createRequest(LeaveRequest request) throws Exception {
         String sql = "INSERT INTO leave_requests (user_id, title, from_date, to_date, reason, status) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, request.getUserId());
             ps.setString(2, request.getTitle());
             ps.setDate(3, request.getFromDate());
@@ -28,15 +28,14 @@ public class LeaveRequestDAO {
 
     public List<LeaveRequest> getPersonalRequests(int userId) throws Exception {
         List<LeaveRequest> requests = new ArrayList<>();
-        String sql = "SELECT lr.*, u.full_name AS created_by, m.full_name AS processed_by_username, r.role_name " +
-                    "FROM leave_requests lr " +
-                    "JOIN users u ON lr.user_id = u.user_id " +
-                    "LEFT JOIN users m ON lr.processed_by = m.user_id " +
-                    "LEFT JOIN user_roles ur ON u.user_id = ur.user_id " +
-                    "LEFT JOIN roles r ON ur.role_id = r.role_id " +
-                    "WHERE lr.user_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT lr.*, u.full_name AS created_by, m.full_name AS processed_by_username, r.role_name "
+                + "FROM leave_requests lr "
+                + "JOIN users u ON lr.user_id = u.user_id "
+                + "LEFT JOIN users m ON lr.processed_by = m.user_id "
+                + "LEFT JOIN user_roles ur ON u.user_id = ur.user_id "
+                + "LEFT JOIN roles r ON ur.role_id = r.role_id "
+                + "WHERE lr.user_id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -54,13 +53,13 @@ public class LeaveRequestDAO {
 
     public List<LeaveRequest> getEmployeeRequests(int reviewerUserId, String reviewerRole, Integer targetUserId) throws Exception {
         List<LeaveRequest> requests = new ArrayList<>();
-        String sql = "SELECT lr.*, u.full_name AS created_by, m.full_name AS processed_by_username, r.role_name " +
-                    "FROM leave_requests lr " +
-                    "JOIN users u ON lr.user_id = u.user_id " +
-                    "LEFT JOIN users m ON lr.processed_by = m.user_id " +
-                    "LEFT JOIN user_roles ur ON u.user_id = ur.user_id " +
-                    "LEFT JOIN roles r ON ur.role_id = r.role_id " +
-                    "WHERE lr.user_id != ? AND ";
+        String sql = "SELECT lr.*, u.full_name AS created_by, m.full_name AS processed_by_username, r.role_name "
+                + "FROM leave_requests lr "
+                + "JOIN users u ON lr.user_id = u.user_id "
+                + "LEFT JOIN users m ON lr.processed_by = m.user_id "
+                + "LEFT JOIN user_roles ur ON u.user_id = ur.user_id "
+                + "LEFT JOIN roles r ON ur.role_id = r.role_id "
+                + "WHERE lr.user_id != ? AND ";
         List<Object> params = new ArrayList<>();
         params.add(reviewerUserId);
 
@@ -86,8 +85,7 @@ public class LeaveRequestDAO {
             params.add(targetUserId);
         }
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
@@ -106,15 +104,14 @@ public class LeaveRequestDAO {
     }
 
     public LeaveRequest getRequestById(int requestId) throws Exception {
-        String sql = "SELECT lr.*, u.full_name AS created_by, m.full_name AS processed_by_username, r.role_name " +
-                    "FROM leave_requests lr " +
-                    "JOIN users u ON lr.user_id = u.user_id " +
-                    "LEFT JOIN users m ON lr.processed_by = m.user_id " +
-                    "LEFT JOIN user_roles ur ON u.user_id = ur.user_id " +
-                    "LEFT JOIN roles r ON ur.role_id = r.role_id " +
-                    "WHERE lr.request_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT lr.*, u.full_name AS created_by, m.full_name AS processed_by_username, r.role_name "
+                + "FROM leave_requests lr "
+                + "JOIN users u ON lr.user_id = u.user_id "
+                + "LEFT JOIN users m ON lr.processed_by = m.user_id "
+                + "LEFT JOIN user_roles ur ON u.user_id = ur.user_id "
+                + "LEFT JOIN roles r ON ur.role_id = r.role_id "
+                + "WHERE lr.request_id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, requestId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -132,19 +129,17 @@ public class LeaveRequestDAO {
 
     public void reviewRequest(int requestId, String status, int processedBy) throws Exception {
         String sql = "UPDATE leave_requests SET status = ?, processed_by = ? WHERE request_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, processedBy);
             ps.setInt(3, requestId);
             ps.executeUpdate();
         }
     }
-    
+
     public Date getUserStartDate(int userId) throws Exception {
         String sql = "SELECT created_date FROM users WHERE user_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {

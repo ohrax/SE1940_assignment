@@ -33,8 +33,17 @@ public class ListEmployeeRequestServlet extends HttpServlet {
             List<LeaveRequest> requests;
             if (pathInfo != null && pathInfo.length() > 1) {
                 int targetUserId = Integer.parseInt(pathInfo.substring(1));
+
+                if (targetUserId == user.getUserId()) {
+                    req.setAttribute("errorMessage", "You cannot view your own list in the Employee List view. Please use the Personal List view.");
+                    req.getRequestDispatcher("/employee_list.jsp").forward(req, resp);
+                    return;
+                }
+
                 // Fetch requests for the specific user, ensuring the logged-in user has permission
                 requests = requestDAO.getEmployeeRequests(user.getUserId(), user.getRoleName(), targetUserId);
+                req.setAttribute("requests", requests);
+                req.setAttribute("targetUserId", targetUserId);
             } else {
                 // Fetch all requests the logged-in user can see
                 requests = requestDAO.getEmployeeRequests(user.getUserId(), user.getRoleName(), null);
@@ -45,7 +54,7 @@ public class ListEmployeeRequestServlet extends HttpServlet {
             throw new ServletException(e);
         }
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
@@ -58,7 +67,6 @@ public class ListEmployeeRequestServlet extends HttpServlet {
         String userIdStr = req.getParameter("userId");
         if (userIdStr != null && !userIdStr.isEmpty()) {
             int userId = Integer.parseInt(userIdStr);
-            session.setAttribute("userID", userId);
             resp.sendRedirect("/LeaveManagement/request/list/employee/" + userId);
         } else {
             resp.sendRedirect("/LeaveManagement/request/list/employee");

@@ -13,13 +13,18 @@
         <h3>Logged in as: ${sessionScope.user.fullName} (${sessionScope.user.roleName})</h3>
         <c:if test="${sessionScope.user.roleName == 'leader' || sessionScope.user.roleName == 'department_manager' || sessionScope.user.roleName == 'admin'}">
             <h3>Select Employee to View Requests:</h3>
-            <form action="/LeaveManagement/request/list/employee" method="post">
-                <label>User ID: <input type="number" name="userId" value="${userID}" required></label>
+            <form action="/LeaveManagement/request/list/employee" method="POST">
+                <label>User ID: <input type="number" name="userId" required></label>
                 <button type="submit">View</button>
             </form>
         </c:if>
+        <c:if test="${not empty errorMessage}">
+            <p style="color: red;">${errorMessage}</p>
+        </c:if>
         <c:if test="${not empty requests}">
-            <h3>Requests for: ${requests[0].createdBy}</h3>
+            <c:if test="${not empty targetUserId}">
+                <h3>Requests for: ${requests[0].createdBy}</h3>
+            </c:if>
             <table border="1">
                 <tr>
                     <th>Title</th>
@@ -28,7 +33,6 @@
                     <th>Created By</th>
                     <th>Status</th>
                     <th>Processed By</th>
-                    <th>Action</th>
                 </tr>
                 <c:forEach var="request" items="${requests}">
                     <tr>
@@ -38,18 +42,9 @@
                         <td>${request.createdBy}</td>
                         <td>${request.status}</td>
                         <td>${request.processedByUsername}</td>
-                        <td>
-                            <a href="/LeaveManagement/request/review/${request.requestId}">Review</a>
-                        </td>
                     </tr>
                 </c:forEach>
             </table>
-        </c:if>
-        <c:if test="${empty requests}">
-            <p>No leave requests found.</p>
-            <c:if test="${not empty param.userId}">
-                <p>Debug: Searched for user ID ${param.userId}</p>
-            </c:if>
         </c:if>
         <br>
         <a href="/LeaveManagement/home">Back to Home</a>

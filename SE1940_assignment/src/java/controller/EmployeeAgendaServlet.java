@@ -32,6 +32,13 @@ public class EmployeeAgendaServlet extends HttpServlet {
             String pathInfo = req.getPathInfo(); // e.g., "/1" or null
             if (pathInfo != null && pathInfo.length() > 1) {
                 int userId = Integer.parseInt(pathInfo.substring(1));
+                
+                if (userId == user.getUserId()) {
+                    req.setAttribute("errorMessage", "You cannot view your own agenda in the Employee Agenda view. Please use the Personal Agenda view.");
+                    req.getRequestDispatcher("/employee_agenda.jsp").forward(req, resp);
+                    return;
+                }
+                
                 List<LeaveRequest> requests = requestDAO.getPersonalRequests(userId);
                 req.setAttribute("requests", requests);
 
@@ -70,7 +77,6 @@ public class EmployeeAgendaServlet extends HttpServlet {
         String userIdStr = req.getParameter("userId");
         if (userIdStr != null && !userIdStr.isEmpty()) {
             int userId = Integer.parseInt(userIdStr);
-            session.setAttribute("userID", userId);
             resp.sendRedirect("/LeaveManagement/agenda/employee/" + userId);
         } else {
             resp.sendRedirect("/LeaveManagement/agenda/employee");

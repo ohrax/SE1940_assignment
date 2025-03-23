@@ -9,7 +9,7 @@
     <head><title>Create Leave Request</title></head>
     <body>
         <h1>Create Leave Request</h1>
-        <form action="/LeaveManagement/request/create" method="post">
+        <form action="/LeaveManagement/request/create" method="POST">
             <label>User: <input type="text" value="${sessionScope.user.fullName}" readonly></label><br>
             <label>Role: <input type="text" value="${sessionScope.user.roleName}" readonly></label><br>
             <label>Division: <input type="text" value="${sessionScope.user.divisionName}" readonly></label><br>

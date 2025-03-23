@@ -86,6 +86,5 @@ public class LeaveRequest {
     public void setRequesterRole(String requesterRole) {
         this.requesterRole = requesterRole;
     }
-    
-    
+
 }
